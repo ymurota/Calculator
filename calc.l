@@ -1,8 +1,8 @@
 %{
 #include <stdio.h>
+#include <string.h>
 #include "y.tab.h"
 #include "create.h"
-  
  int
 yywrap(void)
 {
@@ -10,6 +10,8 @@ yywrap(void)
 }
 %}
 %%
+"def"   return DEF;
+","     return COMMA;
 "="     return EQ;
 "("     return LP;
 ")"     return RP;
@@ -21,18 +23,23 @@ yywrap(void)
 "%"     return REM;
 "\n"	return CR;
 [1-9][0-9]* {
-	double tmp;
-	sscanf(yytext, "%lf", &tmp);
-	Expression val = create_value_expression(tmp);
-	yylval.val = val;
-	return NUMBER;
+  double tmp;
+  sscanf(yytext, "%lf", &tmp);
+  Expression val = create_value_expression(tmp);
+  yylval.val = val;
+  return NUMBER;
 }
 [0-9]*\.[0-9]* {
-  	double tmp;
-	sscanf(yytext, "%lf", &tmp);
-	Expression val = create_value_expression(tmp);
-	yylval.val = val;
-	return NUMBER;
+  double tmp;
+  sscanf(yytext, "%lf", &tmp);
+  Expression val = create_value_expression(tmp);
+  yylval.val = val;
+  return NUMBER;
 }
-
+[a-zA-Z][a-zA-Z0-9]* {
+  char tmp[100];
+  sscanf(yytext, "%s", tmp);
+  strcpy(yylval.name, tmp);
+  return IDENTIFIER;
+}
 %%

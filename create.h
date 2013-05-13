@@ -1,5 +1,4 @@
 #define MAX_LENGTH 100
-
 /* data structures */
 typedef enum {
   VALUE,
@@ -38,12 +37,6 @@ struct symbol{
 };
 
 typedef Symbol Stack[MAX_LENGTH];
-int pointer = 0;
-
-/* extern Symbol local_env; */
-/* extern Symbol global_env; */
-/* extern Stack stack; */
-
 
 /* environment functions */
 Symbol init_table(Symbol table);
@@ -71,7 +64,7 @@ void set_local();
 void set_arguments_to_local(Arguments params, Arguments args);
 
 Symbol find_function(char* name);
-Symbol find_varivales(char* name);
+Symbol find_variable(char* name);
 
 /* arguments functions */
 Arguments generate_arg_list();

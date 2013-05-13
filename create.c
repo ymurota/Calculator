@@ -7,6 +7,7 @@
 Symbol local_env;
 Symbol global_env;
 Stack stack;
+int stack_pointer = 0;
 
 /* environment functions */
 Symbol init_table(Symbol table) {
@@ -21,11 +22,11 @@ void init_env() {
 }
 
 void push_env(Symbol env) {
-  stack[pointer++] = env;
+  stack[stack_pointer++] = env;
 }
 
 Symbol pop_env() {
-  return stack[--pointer];
+  return stack[--stack_pointer];
 }
 
 /* create functions */
@@ -53,13 +54,11 @@ Expression create_variable_expression(char* name) {
 }
 
 Expression create_function_expression(char* name, Arguments args) {
-  printf ("create_function:%s\n",args->name);
   Expression func = (Expression) malloc(sizeof *func);
   func->type = FUNCTION;
   func->identifier = (char*) malloc(sizeof(char)*(strlen(name)+1));
   strcpy(func->identifier, name);
   func->args = args;
-
   return func;
 }
 
@@ -79,7 +78,7 @@ double eval(Expression tree) {
 	case FUNCTION:
 	  return function_call(tree->identifier, tree->args);
 	case VARIABLE:
-	  s = find_varivales(tree->identifier);
+	  s = find_variable(tree->identifier);
 	  return s->exp->val;
 	}
   } else {
@@ -94,6 +93,7 @@ void define_function(char* name, Arguments params, Expression exp) {
 
 void define_variable(char* name, Expression exp) {
   global_env = putsym(global_env, VARIABLE, name, exp, NULL);
+  Symbol a = find_variable(name);
 }
 
 /* function call sequence */
@@ -117,7 +117,7 @@ void set_arguments_to_local(Arguments params, Arguments args) {
   }
 }
 
-/* set symbolic_table to environment from stack */
+/* set symbolic_table from stack to environment */
 void set_local() {
   local_env = pop_env();
 }
@@ -131,7 +131,7 @@ Symbol find_function(char* name) {
   return getsym(global_env, FUNCTION, name);
 }
 
-Symbol find_varivales(char* name) {
+Symbol find_variable(char* name) {
   Symbol s = getsym(local_env, VARIABLE, name);
   if (s == NULL) s = getsym(global_env, VARIABLE, name);
   return s;
@@ -175,34 +175,8 @@ Symbol getsym(Symbol env, ExpressionType type, char* name) {
   Symbol s;
   for (s = env; s->next != NULL; s = s->next) {
 	if (strcmp(s->name, name) == 0 && s->type == type) {
-	  printf ("getsym:%s\n", s->name);
 	  return s;
 	}
   }
   return NULL;
 }
-
-
-/* int main(int argc, char *argv[]) { */
-/*   init_env(); */
-/*   Arguments args = generate_arg_list(); */
-/*   Arguments params = generate_arg_list(); */
-
-/*   params = chain_param(params, "n"); */
-/*   args = chain_arg(args, 2); */
-  
-/*   Expression tree = create_function_expression("f", args); */
-/*   printf ("Arguments:%s\n", tree->args->name); */
-
-/*   Expression func = create_variable_expression("n"); */
-/*   Expression v = create_value_expression(3.0); */
-/*   Expression f = create_expression(ADD_EXPRESSION, func, v); */
-  
-/*   define_function("f", params, f); */
-/*   Symbol test = find_function("f"); */
-  
-/*   printf ("aaa\n"); */
-/*   printf("%f\n",eval(tree)); */
-  
-/*   return 0; */
-/* } */
