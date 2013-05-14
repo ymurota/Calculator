@@ -35,9 +35,9 @@ line
   }
   ;
 function_definition
-  : DEF IDENTIFIER  LP params RP expression
+  : IDENTIFIER LP params RP EQ expression
   {
-	define_function($2, $4, $6);
+	define_function($1, $3, $6);
   }
   ;
 assignment
