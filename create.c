@@ -79,7 +79,7 @@ double eval(Expression tree) {
 	  return function_call(tree->identifier, tree->args);
 	case VARIABLE:
 	  s = find_variable(tree->identifier);
-	  return s->exp->val;
+	  return eval(s->exp);
 	}
   } else {
 	return tree->val;
