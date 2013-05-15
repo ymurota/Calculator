@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include "create.h"
 
 /* global variables */
@@ -75,6 +76,10 @@ double eval(Expression tree) {
 	  return eval(tree->lft) * eval(tree->rght);
 	case DIV_EXPRESSION:
 	  return eval(tree->lft) / eval(tree->rght);
+	case POW_EXPRESSION:
+	  return pow(eval(tree->lft), eval(tree->rght));
+	case REM_EXPRESSION:
+	  return (int)eval(tree->lft) % (int)eval(tree->rght);
 	case FUNCTION:
 	  return function_call(tree->identifier, tree->args);
 	case VARIABLE:

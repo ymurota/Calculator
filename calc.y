@@ -89,6 +89,14 @@ term
   {
 	$$ = create_expression(DIV_EXPRESSION, $1, $3);	
   }
+  | term POW fact
+  {
+	$$ = create_expression(POW_EXPRESSION, $1, $3);
+  }
+  | term REM fact
+  {
+	$$ = create_expression(REM_EXPRESSION, $1, $3);
+  }
   ;
 fact
   : LP expression RP
