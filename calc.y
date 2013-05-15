@@ -9,11 +9,13 @@
   struct arguments_link* args;
   struct expression_tree* val;
   struct expression_tree* expression;
+  struct condition* condition;
 }
 %token <val> NUMBER
 %token <name> IDENTIFIER
-%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA
-%type <expression> expression term primary_expression fact
+%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA IF COLON EQL N_EQL LS GR LS_E GR_E
+%type <expression> expression term primary_expression fact if_statement
+%type <condition> conditions
 %type <args> arguments params
 %%
 line_list
@@ -68,8 +70,44 @@ arguments
 	$$ = chain_arg($3, eval($1));
   }
   ;
+if_statement
+  : conditions IF expression COLON expression
+  {
+	$$ = create_if_expression($1, $3, $5);
+  }
+  ;
+conditions
+  : expression EQL expression
+  {
+	$$ = create_condition(EQUAL, $1, $3);
+  }
+  | expression N_EQL expression
+  {
+	$$ = create_condition(NOT_EQUAL, $1, $3);
+  }
+  | expression LS expression
+  {
+	$$ = create_condition(LESS, $1, $3);
+  }
+  | expression GR expression
+  {
+	$$ = create_condition(GREATER, $1, $3);
+  }
+  | expression LS_E expression
+  {
+	$$ = create_condition(LESS_EQUAL, $1, $3);
+  }
+  | expression GR_E expression
+  {
+	$$ = create_condition(GREATER_EQUAL, $1, $3);
+  }
+  ;
 expression
   : term
+  | if_statement
+  {
+	$$ = $1;
+  }
   | expression ADD term
   {
     $$ = create_expression(ADD_EXPRESSION, $1, $3);

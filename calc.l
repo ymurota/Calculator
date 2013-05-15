@@ -22,6 +22,15 @@ yywrap(void)
 "^"     return POW;
 "%"     return REM;
 "\n"	return CR;
+"?"     return IF;
+":"     return COLON;
+"=="    return EQL;
+"!="    return N_EQL;
+"<"     return LS;
+">"     return GR;
+">="    return LS_E;
+"<="    return GR_E;
+
 [1-9][0-9]* {
   double tmp;
   sscanf(yytext, "%lf", &tmp);

@@ -9,8 +9,18 @@ typedef enum {
   POW_EXPRESSION,
   REM_EXPRESSION,
   VARIABLE,
-  FUNCTION
+  FUNCTION,
+  IF_EXPRESSION,
 } ExpressionType;
+
+typedef enum {
+  EQUAL, // ==
+  NOT_EQUAL, // !=
+  LESS, // <
+  GREATER, // >
+  LESS_EQUAL, // <=
+  GREATER_EQUAL // >=
+} ConditionalOpe;
 
 typedef struct arguments_link* Arguments;
 struct arguments_link{
@@ -19,12 +29,21 @@ struct arguments_link{
   Arguments next;
 };
 
+typedef struct condition* Condition;
 typedef struct expression_tree* Expression;
+
+struct condition{
+  Expression lft;
+  Expression rght;
+  ConditionalOpe ope;
+};
+
 struct expression_tree{
   ExpressionType type;
   double val;
   char* identifier;
   Arguments args;
+  Condition cond;
   Expression lft;
   Expression rght;
 };
@@ -51,9 +70,13 @@ Expression create_expression(ExpressionType type, Expression lft, Expression rgh
 Expression create_value_expression(double val);
 Expression create_function_expression(char* name, Arguments args);
 Expression create_variable_expression(char* name);
+Expression create_if_expression(Condition cond, Expression lft, Expression rght);
+Condition create_condition(ConditionalOpe ope, Expression lft, Expression rght);
 
 /* eval functions */
 double eval(Expression tree);
+double eval_if(Expression tree);
+int eval_bool(Condition cond);
 
 /* symbol functions */
 Symbol putsym(Symbol env, ExpressionType type, char* name, Expression exp, Arguments params);
@@ -76,5 +99,3 @@ Arguments chain_arg(Arguments args, double val);
 /* define functions */
 void define_function(char* name, Arguments params, Expression exp);
 void define_variable(char* name, Expression val);
-
-
