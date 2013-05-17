@@ -104,6 +104,8 @@ double eval(Expression tree) {
 	  return eval(s->exp);
 	case IF_EXPRESSION:
 	  return eval_if(tree);
+	case SIN_EXPRESSION:
+	  return sin(eval(tree->lft));
 	}
   } else {
 	return tree->val;

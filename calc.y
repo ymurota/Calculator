@@ -13,8 +13,8 @@
 }
 %token <val> NUMBER
 %token <name> IDENTIFIER
-%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA IF COLON EQL N_EQL LS GR LS_E GR_E
-%type <expression> expression term primary_expression fact if_statement
+%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA IF COLON EQL N_EQL LS GR LS_E GR_E SIN
+%type <expression> expression term primary_expression fact if_statement statement
 %type <condition> conditions
 %type <args> arguments params
 %%
@@ -23,7 +23,7 @@ line_list
   | line_list line
   ;
 line
-  : expression CR
+  : statement CR
   {
     printf("\t%.10g\n", eval($1));
   }
@@ -36,8 +36,12 @@ line
 	printf("assigned\n");
   }
   ;
+statement
+  : expression
+  | if_statement
+  ;
 function_definition
-  : IDENTIFIER LP params RP EQ expression
+  : IDENTIFIER LP params RP EQ statement
   {
 	define_function($1, $3, $6);
   }
@@ -71,7 +75,7 @@ arguments
   }
   ;
 if_statement
-  : conditions IF expression COLON expression
+  : conditions IF statement COLON statement
   {
 	$$ = create_if_expression($1, $3, $5);
   }
@@ -134,6 +138,10 @@ term
   | term REM fact
   {
 	$$ = create_expression(REM_EXPRESSION, $1, $3);
+  }
+  | SIN LP expression RP
+  {
+	$$ = create_expression(SIN_EXPRESSION, $3, NULL);
   }
   ;
 fact
