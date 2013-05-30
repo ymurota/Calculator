@@ -30,7 +30,7 @@ yywrap(void)
 ">"     return GR;
 ">="    return LS_E;
 "<="    return GR_E;
-"sin"   return SIN
+"sin"   return SIN;
 
 [1-9][0-9]* {
   double tmp;

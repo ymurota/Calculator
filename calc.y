@@ -13,7 +13,7 @@
 }
 %token <val> NUMBER
 %token <name> IDENTIFIER
-%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA IF COLON EQL N_EQL LS GR LS_E GR_E SIN
+%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA IF COLON EQL N_EQL LS GR LS_E GR_E SIN DEF
 %type <expression> expression term primary_expression fact if_statement statement
 %type <condition> conditions
 %type <args> arguments params
@@ -41,13 +41,13 @@ statement
   | if_statement
   ;
 function_definition
-  : IDENTIFIER LP params RP EQ statement
+  : DEF IDENTIFIER LP params RP statement
   {
-	define_function($1, $3, $6);
+	define_function($2, $4, $6);
   }
   ;
 assignment
-  : IDENTIFIER EQ expression
+  : IDENTIFIER EQ statement
   {
 	define_variable($1, $3);
   }
@@ -58,20 +58,20 @@ params
 	Arguments args = generate_arg_list();
 	$$ = chain_param(args, $1);
   }
-  | IDENTIFIER COMMA params
+  | params COMMA IDENTIFIER
   {
-	$$ = chain_param($3, $1);
+	$$ = chain_param($1, $3);
   }
   ;
 arguments
-  : NUMBER
+  : expression
   {
 	Arguments args = generate_arg_list();
 	$$ = chain_arg(args, eval($1));
   }
-  | NUMBER COMMA arguments
+  | arguments COMMA expression
   {
-	$$ = chain_arg($3, eval($1));
+	$$ = chain_arg($1, eval($3));
   }
   ;
 if_statement
