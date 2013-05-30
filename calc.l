@@ -31,6 +31,9 @@ yywrap(void)
 ">="    return LS_E;
 "<="    return GR_E;
 "sin"   return SIN;
+"cos"   return COS;
+"tan"   return TAN;
+"log"   return LOG;
 
 [1-9][0-9]* {
   double tmp;
