@@ -12,6 +12,7 @@ typedef enum {
   FUNCTION,
   IF_EXPRESSION,
   SIN_EXPRESSION,
+  COS_EXPRESSION,
 } ExpressionType;
 
 typedef enum {
