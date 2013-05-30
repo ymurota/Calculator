@@ -9,11 +9,13 @@
   struct arguments_link* args;
   struct expression_tree* val;
   struct expression_tree* expression;
+  struct condition* condition;
 }
 %token <val> NUMBER
 %token <name> IDENTIFIER
-%token ADD SUB MUL DIV CR EQ LP RP POW REM DEF COMMA
-%type <expression> expression term primary_expression fact
+%token ADD SUB MUL DIV CR EQ LP RP POW REM COMMA IF COLON EQL N_EQL LS GR LS_E GR_E SIN COS TAN LOG DEF
+%type <expression> expression term primary_expression fact if_statement statement
+%type <condition> conditions
 %type <args> arguments params
 %%
 line_list
@@ -21,7 +23,7 @@ line_list
   | line_list line
   ;
 line
-  : expression CR
+  : statement CR
   {
     printf("\t%.10g\n", eval($1));
   }
@@ -34,14 +36,18 @@ line
 	printf("assigned\n");
   }
   ;
+statement
+  : expression
+  | if_statement
+  ;
 function_definition
-  : IDENTIFIER LP params RP EQ expression
+  : DEF IDENTIFIER LP params RP statement
   {
-	define_function($1, $3, $6);
+	define_function($2, $4, $6);
   }
   ;
 assignment
-  : IDENTIFIER EQ expression
+  : IDENTIFIER EQ statement
   {
 	define_variable($1, $3);
   }
@@ -52,24 +58,60 @@ params
 	Arguments args = generate_arg_list();
 	$$ = chain_param(args, $1);
   }
-  | IDENTIFIER COMMA params
+  | params COMMA IDENTIFIER
   {
-	$$ = chain_param($3, $1);
+	$$ = chain_param($1, $3);
   }
   ;
 arguments
-  : NUMBER
+  : expression
   {
 	Arguments args = generate_arg_list();
-	$$ = chain_arg(args, eval($1));
+	$$ = chain_arg(args, $1);
   }
-  | NUMBER COMMA arguments
+  | arguments COMMA expression
   {
-	$$ = chain_arg($3, eval($1));
+	$$ = chain_arg($1, $3);
+  }
+  ;
+if_statement
+  : conditions IF statement COLON statement
+  {
+	$$ = create_if_expression($1, $3, $5);
+  }
+  ;
+conditions
+  : expression EQL expression
+  {
+	$$ = create_condition(EQUAL, $1, $3);
+  }
+  | expression N_EQL expression
+  {
+	$$ = create_condition(NOT_EQUAL, $1, $3);
+  }
+  | expression LS expression
+  {
+	$$ = create_condition(LESS, $1, $3);
+  }
+  | expression GR expression
+  {
+	$$ = create_condition(GREATER, $1, $3);
+  }
+  | expression LS_E expression
+  {
+	$$ = create_condition(LESS_EQUAL, $1, $3);
+  }
+  | expression GR_E expression
+  {
+	$$ = create_condition(GREATER_EQUAL, $1, $3);
   }
   ;
 expression
   : term
+  | if_statement
+  {
+	$$ = $1;
+  }
   | expression ADD term
   {
     $$ = create_expression(ADD_EXPRESSION, $1, $3);
@@ -87,7 +129,7 @@ term
   }
   | term DIV fact
   {
-	$$ = create_expression(DIV_EXPRESSION, $1, $3);	
+	$$ = create_expression(DIV_EXPRESSION, $1, $3);
   }
   | term POW fact
   {
@@ -96,6 +138,22 @@ term
   | term REM fact
   {
 	$$ = create_expression(REM_EXPRESSION, $1, $3);
+  }
+  | SIN LP expression RP
+  {
+  $$ = create_expression(SIN_EXPRESSION, $3, NULL);
+  }
+  | COS LP expression RP
+  {
+  $$ = create_expression(COS_EXPRESSION, $3, NULL);
+  }
+  | TAN LP expression RP
+  {
+  $$ = create_expression(TAN_EXPRESSION, $3, NULL);
+  }
+  | LOG LP expression RP
+  {
+	$$ = create_expression(LOG_EXPRESSION, $3, NULL);
   }
   ;
 fact

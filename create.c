@@ -63,6 +63,23 @@ Expression create_function_expression(char* name, Arguments args) {
   return func;
 }
 
+Expression create_if_expression(Condition cond, Expression lft, Expression rght) {
+  Expression exp = (Expression) malloc(sizeof *exp);
+  exp->type = IF_EXPRESSION;
+  exp->cond = cond;
+  exp->lft = lft;
+  exp->rght = rght;
+  return exp;
+}
+
+Condition create_condition(ConditionalOpe ope, Expression lft, Expression rght) {
+  Condition cond = (Condition) malloc(sizeof *cond);
+  cond->ope = ope;
+  cond->lft = lft;
+  cond->rght = rght;
+  return cond;
+}
+
 /* eval functions */
 double eval(Expression tree) {
   if (tree->type != VALUE) {
@@ -85,9 +102,46 @@ double eval(Expression tree) {
 	case VARIABLE:
 	  s = find_variable(tree->identifier);
 	  return eval(s->exp);
+	case IF_EXPRESSION:
+	  return eval_if(tree);
+  case SIN_EXPRESSION:
+    return sin(eval(tree->lft));
+  case COS_EXPRESSION:
+    return cos(eval(tree->lft));
+  case TAN_EXPRESSION:
+    return tan(eval(tree->lft));
+	case LOG_EXPRESSION:
+	  return log(eval(tree->lft));
 	}
   } else {
 	return tree->val;
+  }
+}
+
+double eval_if(Expression tree) {
+  if (eval_bool(tree->cond)) {
+	return eval(tree->lft);
+  } else {
+	return eval(tree->rght);
+  }
+}
+
+int eval_bool(Condition cond) {
+  double lft = eval(cond->lft);
+  double rght = eval(cond->rght);
+  switch (cond->ope) {
+  case EQUAL:
+	return lft == rght;
+  case NOT_EQUAL:
+	return lft != rght;
+  case LESS:
+	return lft < rght;
+  case GREATER:
+	return lft > rght;
+  case LESS_EQUAL:
+	return lft <= rght;
+  case GREATER_EQUAL:
+	return lft >= rght;
   }
 }
 
@@ -117,7 +171,7 @@ double function_call(char* name, Arguments args) {
 void set_arguments_to_local(Arguments params, Arguments args) {
   Expression v;
   for(; params->next != NULL || args->next != NULL; params = params->next, args = args->next) {
-	v = create_value_expression(args->val);
+	v = create_value_expression(eval(args->exp));
 	local_env = putsym(local_env, VARIABLE, params->name, v, NULL);
   }
 }
@@ -157,9 +211,10 @@ Arguments chain_param(Arguments args, char* name) {
   return a;
 }
 
-Arguments chain_arg(Arguments args, double val) {
+Arguments chain_arg(Arguments args, Expression exp) {
   Arguments a = (Arguments)malloc(sizeof(*a));
-  a->val = val;
+  //a->val = val;
+  a->exp = exp;
   a->next = args;
   return a;
 }
