@@ -106,8 +106,10 @@ double eval(Expression tree) {
 	  return eval_if(tree);
   case SIN_EXPRESSION:
     return sin(eval(tree->lft));
-	case COS_EXPRESSION:
-	  return cos(eval(tree->lft));
+  case COS_EXPRESSION:
+    return cos(eval(tree->lft));
+	case TAN_EXPRESSION:
+	  return tan(eval(tree->lft));
 	}
   } else {
 	return tree->val;

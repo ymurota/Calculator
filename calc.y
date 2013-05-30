@@ -13,7 +13,7 @@
 }
 %token <val> NUMBER
 %token <name> IDENTIFIER
-%token ADD SUB MUL DIV CR EQ LP RP POW REM COMMA IF COLON EQL N_EQL LS GR LS_E GR_E SIN COS DEF
+%token ADD SUB MUL DIV CR EQ LP RP POW REM COMMA IF COLON EQL N_EQL LS GR LS_E GR_E SIN COS TAN DEF
 %type <expression> expression term primary_expression fact if_statement statement
 %type <condition> conditions
 %type <args> arguments params
@@ -145,7 +145,11 @@ term
   }
   | COS LP expression RP
   {
-	$$ = create_expression(COS_EXPRESSION, $3, NULL);
+  $$ = create_expression(COS_EXPRESSION, $3, NULL);
+  }
+  | TAN LP expression RP
+  {
+	$$ = create_expression(TAN_EXPRESSION, $3, NULL);
   }
   ;
 fact
