@@ -55,7 +55,6 @@ Expression create_variable_expression(char* name) {
 }
 
 Expression create_function_expression(char* name, Arguments args) {
-  printf("created_function\n");
   Expression func = (Expression) malloc(sizeof *func);
   func->type = FUNCTION;
   func->identifier = (char*) malloc(sizeof(char)*(strlen(name)+1));
@@ -65,7 +64,6 @@ Expression create_function_expression(char* name, Arguments args) {
 }
 
 Expression create_if_expression(Condition cond, Expression lft, Expression rght) {
-  printf("created_if\n");
   Expression exp = (Expression) malloc(sizeof *exp);
   exp->type = IF_EXPRESSION;
   exp->cond = cond;
@@ -143,7 +141,6 @@ int eval_bool(Condition cond) {
 
 /* define functions */
 void define_function(char* name, Arguments params, Expression exp) {
-  printf("define_function\n");
   global_env = putsym(global_env, FUNCTION, name, exp, params);
 }
 
