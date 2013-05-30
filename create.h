@@ -23,15 +23,17 @@ typedef enum {
   GREATER_EQUAL // >=
 } ConditionalOpe;
 
+typedef struct expression_tree* Expression;
 typedef struct arguments_link* Arguments;
 struct arguments_link{
   char* name;
   double val;
+  Expression exp;
   Arguments next;
 };
 
 typedef struct condition* Condition;
-typedef struct expression_tree* Expression;
+
 
 struct condition{
   Expression lft;
@@ -95,7 +97,7 @@ Symbol find_variable(char* name);
 /* arguments functions */
 Arguments generate_arg_list();
 Arguments chain_param(Arguments args, char* name);
-Arguments chain_arg(Arguments args, double val);
+Arguments chain_arg(Arguments args, Expression exp);
 
 /* define functions */
 void define_function(char* name, Arguments params, Expression exp);

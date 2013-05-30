@@ -55,6 +55,7 @@ Expression create_variable_expression(char* name) {
 }
 
 Expression create_function_expression(char* name, Arguments args) {
+  printf("created_function\n");
   Expression func = (Expression) malloc(sizeof *func);
   func->type = FUNCTION;
   func->identifier = (char*) malloc(sizeof(char)*(strlen(name)+1));
@@ -64,6 +65,7 @@ Expression create_function_expression(char* name, Arguments args) {
 }
 
 Expression create_if_expression(Condition cond, Expression lft, Expression rght) {
+  printf("created_if\n");
   Expression exp = (Expression) malloc(sizeof *exp);
   exp->type = IF_EXPRESSION;
   exp->cond = cond;
@@ -141,6 +143,7 @@ int eval_bool(Condition cond) {
 
 /* define functions */
 void define_function(char* name, Arguments params, Expression exp) {
+  printf("define_function\n");
   global_env = putsym(global_env, FUNCTION, name, exp, params);
 }
 
@@ -165,7 +168,7 @@ double function_call(char* name, Arguments args) {
 void set_arguments_to_local(Arguments params, Arguments args) {
   Expression v;
   for(; params->next != NULL || args->next != NULL; params = params->next, args = args->next) {
-	v = create_value_expression(args->val);
+	v = create_value_expression(eval(args->exp));
 	local_env = putsym(local_env, VARIABLE, params->name, v, NULL);
   }
 }
@@ -205,9 +208,10 @@ Arguments chain_param(Arguments args, char* name) {
   return a;
 }
 
-Arguments chain_arg(Arguments args, double val) {
+Arguments chain_arg(Arguments args, Expression exp) {
   Arguments a = (Arguments)malloc(sizeof(*a));
-  a->val = val;
+  //a->val = val;
+  a->exp = exp;
   a->next = args;
   return a;
 }
