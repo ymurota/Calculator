@@ -108,8 +108,10 @@ double eval(Expression tree) {
     return sin(eval(tree->lft));
   case COS_EXPRESSION:
     return cos(eval(tree->lft));
-	case TAN_EXPRESSION:
-	  return tan(eval(tree->lft));
+  case TAN_EXPRESSION:
+    return tan(eval(tree->lft));
+	case LOG_EXPRESSION:
+	  return log(eval(tree->lft));
 	}
   } else {
 	return tree->val;

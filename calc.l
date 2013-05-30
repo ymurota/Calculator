@@ -33,6 +33,7 @@ yywrap(void)
 "sin"   return SIN;
 "cos"   return COS;
 "tan"   return TAN;
+"log"   return LOG;
 
 [1-9][0-9]* {
   double tmp;

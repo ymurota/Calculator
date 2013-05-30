@@ -14,6 +14,7 @@ typedef enum {
   SIN_EXPRESSION,
   COS_EXPRESSION,
   TAN_EXPRESSION,
+  LOG_EXPRESSION,
 } ExpressionType;
 
 typedef enum {
