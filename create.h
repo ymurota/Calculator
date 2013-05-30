@@ -102,3 +102,6 @@ Arguments chain_arg(Arguments args, Expression exp);
 /* define functions */
 void define_function(char* name, Arguments params, Expression exp);
 void define_variable(char* name, Expression val);
+
+/* error */
+void error(char* m);

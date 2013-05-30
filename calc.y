@@ -22,8 +22,9 @@ line_list
   : line
   | line_list line
   ;
-line
-  : statement CR
+line:
+  | line CR
+  | statement CR
   {
     printf("\t%.10g\n", eval($1));
   }

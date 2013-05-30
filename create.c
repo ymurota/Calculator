@@ -164,10 +164,13 @@ double function_call(char* name, Arguments args) {
 
 void set_arguments_to_local(Arguments params, Arguments args) {
   Expression v;
-  for(; params->next != NULL || args->next != NULL; params = params->next, args = args->next) {
+  for(; params->next != NULL && args->next != NULL; params = params->next, args = args->next) {
 	v = create_value_expression(eval(args->exp));
 	local_env = putsym(local_env, VARIABLE, params->name, v, NULL);
   }
+
+  if ((args->next == NULL && params->next != NULL)) error("missing arguments");
+  if ((args->next != NULL && params->next == NULL)) error("too many arguments");
 }
 
 /* set symbolic_table from stack to environment */
@@ -181,12 +184,15 @@ void save_local() {
 }
 
 Symbol find_function(char* name) {
-  return getsym(global_env, FUNCTION, name);
+  Symbol f = getsym(global_env, FUNCTION, name);
+  if (f == NULL) error(strcat(name, " is not defined"));
+  return f;
 }
 
 Symbol find_variable(char* name) {
   Symbol s = getsym(local_env, VARIABLE, name);
   if (s == NULL) s = getsym(global_env, VARIABLE, name);
+  if (s == NULL) error(strcat(name, " is not defined"));
   return s;
 }
 
@@ -233,4 +239,9 @@ Symbol getsym(Symbol env, ExpressionType type, char* name) {
 	}
   }
   return NULL;
+}
+
+void error(char* m) {
+  printf("%s\n", m);
+  exit(1);
 }
